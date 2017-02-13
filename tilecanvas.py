@@ -3,15 +3,27 @@ import omg
 import omg.mapedit
 import math
 
+
 class TileItem:
-    def __init__(self, x, y, sector):
+    def __init__(self, canvas, x, y, sector):
         self.x = x
         self.y = y
         self.sector = sector
-        self.canvas.create_rectangle((0, 0, 32, 32), outline="white")
+        self.tilecanvas = canvas
+        self.draw_index = self.tilecanvas.canvas.create_rectangle((x * TileCanvas.tile_size * self.tilecanvas.scale,
+                                                                   y * TileCanvas.tile_size * self.tilecanvas.scale,
+                                                                   32 * self.tilecanvas.scale + x * TileCanvas.tile_size * self.tilecanvas.scale,
+                                                                   32 * self.tilecanvas.scale + y * TileCanvas.tile_size * self.tilecanvas.scale),
+                                                                  outline="white",
+                                                                  fill="#444")
+
+    def destroy(self):
+        self.tilecanvas.canvas.delete(self.draw_index)
 
 
 class TileCanvas(Frame):
+    tile_size = 32
+
     def __init__(self, parent):
         Frame.__init__(self, parent)
         self.canvas = Canvas(self)
@@ -25,7 +37,15 @@ class TileCanvas(Frame):
         self.dragging = False
         self.last_pos = (0, 0)
         self.scroll_position = [0, 0]
-        self.tile_size = 32
+        self.mouse_tile = [0, 0]
+        self.tiles = []
+        self.mouse_down = False
+        self.scale = 1.0
+        self.max_scale = 10.0
+        self.min_scale = 0.1
+        self.offset_x = 0
+        self.offset_y = 0
+        self.anchor = self.canvas.create_line(0, 0, 1, 1)
 
         # Event binding
         self.canvas.bind(sequence="<ButtonPress-1>", func=self.on_mouse_down)
@@ -33,6 +53,7 @@ class TileCanvas(Frame):
         self.canvas.bind(sequence="<ButtonRelease-1>", func=self.on_mouse_up)
         self.canvas.bind_all(sequence="<KeyPress>", func=self.on_key_down)
         self.canvas.bind_all(sequence="<KeyRelease>", func=self.on_key_up)
+        self.canvas.bind(sequence="<MouseWheel>", func=self.on_mouse_wheel)
 
         # Stuff
         self.build_map(omg.MapEditor(omg.WAD('test.wad').maps["MAP01"]))
@@ -42,6 +63,24 @@ class TileCanvas(Frame):
                                                       dash=(5,5),
                                                       outline="#ddd",
                                                       tag="cursor")
+
+    def get_tile(self, x, y):
+        for t in self.tiles:
+            if t.x == x and t.y == y:
+                return t
+        return None
+
+    def set_mouse_tile(self, event):
+        mpos_x = event.x - self.canvas.bbox(self.anchor)[0]
+        mpos_y = event.y - self.canvas.bbox(self.anchor)[1]
+
+        # print "mpos {} {}".format(mpos_x,mpos_y)
+
+        mpos_x = math.floor(mpos_x / (self.tile_size * self.scale))
+        mpos_y = math.floor(mpos_y / (self.tile_size * self.scale))
+
+        self.mouse_tile[0] = mpos_x
+        self.mouse_tile[1] = mpos_y
 
     def build_map(self, omap):
         for l in omap.linedefs:
@@ -64,27 +103,38 @@ class TileCanvas(Frame):
         self.config(width=self.width, height=self.height)
 
     def on_mouse_down(self, event):
-        pass
+        self.mouse_down = True
 
     def on_mouse_up(self, event):
-        pass
+        self.mouse_down = False
+
+    def on_mouse_wheel(self, event):
+        last_scale = self.scale
+        if self.max_scale > (self.scale + (event.delta * 0.1)) > self.min_scale:
+            self.scale += (event.delta * 0.1)
+            delta = self.scale / last_scale
+            self.canvas.scale("all", event.x, event.y, delta, delta)
 
     def on_mouse_move(self, event):
         move = (event.x - self.last_pos[0], event.y - self.last_pos[1])
         self.last_pos = (event.x, event.y)
 
         # Cursor
-        coords = self.canvas.coords("cursor")
-        move_x = event.x - coords[0] - self.scroll_position[0]
-        move_y = event.y - coords[1] - self.scroll_position[1]
-        self.canvas.move("cursor",
-                         math.floor(move_x / self.tile_size) * self.tile_size,
-                         math.floor(move_y / self.tile_size) * self.tile_size)
+        coords = self.canvas.bbox("cursor")
+        self.set_mouse_tile(event)
+        move_x = (self.mouse_tile[0] * self.tile_size * self.scale) + self.canvas.bbox(self.anchor)[0]
+        move_y = (self.mouse_tile[1] * self.tile_size * self.scale) + self.canvas.bbox(self.anchor)[1]
+        self.canvas.move("cursor", move_x, move_y)
+
+        # Draw Tiles
+        if self.mouse_down:
+            over_tile = self.get_tile(self.mouse_tile[0], self.mouse_tile[1])
+
+            if over_tile is None:
+                self.tiles.append(TileItem(self, self.mouse_tile[0], self.mouse_tile[1], 0))
 
         # Canvas dragging
         if self.dragging:
-
-            self.canvas.scan_mark(0, 0)
-            self.canvas.scan_dragto(move[0], move[1], gain=1)
-            self.scroll_position[0] += move[0]
-            self.scroll_position[1] += move[1]
+            self.offset_x += move[0]
+            self.offset_y += move[1]
+            self.canvas.move("all", move[0], move[1])
