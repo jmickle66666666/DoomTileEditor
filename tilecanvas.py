@@ -3,25 +3,26 @@ import math
 
 
 class TileItem:
-    def __init__(self, canvas, x, y, sector):
+    def __init__(self, tilecanvas, x, y, sector):
         self.x = x
         self.y = y
         self.sector = sector
-        self.tilecanvas = canvas
-        x1 = (x * TileCanvas.tile_size * self.tilecanvas.scale) + canvas.canvas.coords("anchor")[0]
-        y1 = (y * TileCanvas.tile_size * self.tilecanvas.scale) + canvas.canvas.coords("anchor")[1]
-        x2 = x1 + (TileCanvas.tile_size * self.tilecanvas.scale)
-        y2 = y1 + (TileCanvas.tile_size * self.tilecanvas.scale)
-        self.draw_index = self.tilecanvas.canvas.create_rectangle((x1, y1, x2, y2),
-                                                                  outline="white",
-                                                                  fill="#444")
+        self.tilecanvas = tilecanvas
+        self.canvas = tilecanvas.canvas
+        tilesize_scaled = tilecanvas.tile_size * tilecanvas.scale
+        x1 = (x * tilesize_scaled) + self.canvas.coords("anchor")[0]
+        y1 = (y * tilesize_scaled) + self.canvas.coords("anchor")[1]
+        x2 = x1 + (tilesize_scaled)
+        y2 = y1 + (tilesize_scaled)
+        self.id = self.canvas.create_rectangle((x1, y1, x2, y2),
+                                               outline="white",
+                                               fill="#444")
 
     def destroy(self):
-        self.tilecanvas.canvas.delete(self.draw_index)
+        self.canvas.delete(self.id)
 
 
 class TileCanvas(Frame):
-    tile_size = 32
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
@@ -45,6 +46,7 @@ class TileCanvas(Frame):
         self.offset_x = 0
         self.offset_y = 0
         self.canvas.create_line(0, 0, 1, 1, tag="anchor")
+        self.tile_size = 32
 
         # Event binding
         self.canvas.bind(sequence="<ButtonPress-1>", func=self.on_mouse_down)
