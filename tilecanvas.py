@@ -10,10 +10,11 @@ class TileItem:
         self.y = y
         self.sector = sector
         self.tilecanvas = canvas
-        self.draw_index = self.tilecanvas.canvas.create_rectangle((x * TileCanvas.tile_size * self.tilecanvas.scale,
-                                                                   y * TileCanvas.tile_size * self.tilecanvas.scale,
-                                                                   32 * self.tilecanvas.scale + x * TileCanvas.tile_size * self.tilecanvas.scale,
-                                                                   32 * self.tilecanvas.scale + y * TileCanvas.tile_size * self.tilecanvas.scale),
+        x1 = (x * TileCanvas.tile_size * self.tilecanvas.scale) + canvas.canvas.coords("anchor")[0]
+        y1 = (y * TileCanvas.tile_size * self.tilecanvas.scale) + canvas.canvas.coords("anchor")[1]
+        x2 = x1 + (TileCanvas.tile_size * self.tilecanvas.scale)
+        y2 = y1 + (TileCanvas.tile_size * self.tilecanvas.scale)
+        self.draw_index = self.tilecanvas.canvas.create_rectangle((x1, y1, x2, y2),
                                                                   outline="white",
                                                                   fill="#444")
 
@@ -45,7 +46,7 @@ class TileCanvas(Frame):
         self.min_scale = 0.1
         self.offset_x = 0
         self.offset_y = 0
-        self.anchor = self.canvas.create_line(0, 0, 1, 1)
+        self.anchor = self.canvas.create_line(0, 0, 1, 1, tag="anchor")
 
         # Event binding
         self.canvas.bind(sequence="<ButtonPress-1>", func=self.on_mouse_down)
@@ -71,10 +72,8 @@ class TileCanvas(Frame):
         return None
 
     def set_mouse_tile(self, event):
-        mpos_x = event.x - self.canvas.bbox(self.anchor)[0]
-        mpos_y = event.y - self.canvas.bbox(self.anchor)[1]
-
-        # print "mpos {} {}".format(mpos_x,mpos_y)
+        mpos_x = event.x - self.canvas.coords(self.anchor)[0]
+        mpos_y = event.y - self.canvas.coords(self.anchor)[1]
 
         mpos_x = math.floor(mpos_x / (self.tile_size * self.scale))
         mpos_y = math.floor(mpos_y / (self.tile_size * self.scale))
@@ -120,10 +119,10 @@ class TileCanvas(Frame):
         self.last_pos = (event.x, event.y)
 
         # Cursor
-        coords = self.canvas.bbox("cursor")
+        coords = self.canvas.coords("cursor")
         self.set_mouse_tile(event)
-        move_x = (self.mouse_tile[0] * self.tile_size * self.scale) + self.canvas.bbox(self.anchor)[0]
-        move_y = (self.mouse_tile[1] * self.tile_size * self.scale) + self.canvas.bbox(self.anchor)[1]
+        move_x = ((self.mouse_tile[0] * self.tile_size * self.scale) + self.canvas.coords(self.anchor)[0]) - coords[0]
+        move_y = ((self.mouse_tile[1] * self.tile_size * self.scale) + self.canvas.coords(self.anchor)[1]) - coords[1]
         self.canvas.move("cursor", move_x, move_y)
 
         # Draw Tiles
