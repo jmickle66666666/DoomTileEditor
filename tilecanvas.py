@@ -46,7 +46,7 @@ class TileCanvas(Frame):
         self.min_scale = 0.1
         self.offset_x = 0
         self.offset_y = 0
-        self.anchor = self.canvas.create_line(0, 0, 1, 1, tag="anchor")
+        self.canvas.create_line(0, 0, 1, 1, tag="anchor")
 
         # Event binding
         self.canvas.bind(sequence="<ButtonPress-1>", func=self.on_mouse_down)
@@ -72,8 +72,8 @@ class TileCanvas(Frame):
         return None
 
     def set_mouse_tile(self, event):
-        mpos_x = event.x - self.canvas.coords(self.anchor)[0]
-        mpos_y = event.y - self.canvas.coords(self.anchor)[1]
+        mpos_x = event.x - self.canvas.coords("anchor")[0]
+        mpos_y = event.y - self.canvas.coords("anchor")[1]
 
         mpos_x = math.floor(mpos_x / (self.tile_size * self.scale))
         mpos_y = math.floor(mpos_y / (self.tile_size * self.scale))
@@ -121,8 +121,8 @@ class TileCanvas(Frame):
         # Cursor
         coords = self.canvas.coords("cursor")
         self.set_mouse_tile(event)
-        move_x = ((self.mouse_tile[0] * self.tile_size * self.scale) + self.canvas.coords(self.anchor)[0]) - coords[0]
-        move_y = ((self.mouse_tile[1] * self.tile_size * self.scale) + self.canvas.coords(self.anchor)[1]) - coords[1]
+        move_x = ((self.mouse_tile[0] * self.tile_size * self.scale) + self.canvas.coords("anchor")[0]) - coords[0]
+        move_y = ((self.mouse_tile[1] * self.tile_size * self.scale) + self.canvas.coords("anchor")[1]) - coords[1]
         self.canvas.move("cursor", move_x, move_y)
 
         # Draw Tiles
