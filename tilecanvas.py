@@ -1,6 +1,4 @@
 from Tkinter import *
-import omg
-import omg.mapedit
 import math
 
 
@@ -77,12 +75,6 @@ class TileCanvas(Frame):
 
         self.mouse_tile[0] = mpos_x
         self.mouse_tile[1] = mpos_y
-
-    def build_map(self, omap):
-        for l in omap.linedefs:
-            v1 = omap.vertexes[l.vx_a]
-            v2 = omap.vertexes[l.vx_b]
-            self.canvas.create_line(v1.x, v1.y, v2.x, v2.y, fill="#999922", tag="")
 
     def update_cursor(self, event):
         coords = self.canvas.coords("cursor")
