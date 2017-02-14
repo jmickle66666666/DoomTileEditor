@@ -56,12 +56,9 @@ class TileCanvas(Frame):
         self.canvas.bind_all(sequence="<KeyRelease>", func=self.on_key_up)
         self.canvas.bind(sequence="<MouseWheel>", func=self.on_mouse_wheel)
 
-        # Stuff
-        self.build_map(omg.MapEditor(omg.WAD('test.wad').maps["MAP01"]))
-
         # Cursor
         self.cursor_id = self.canvas.create_rectangle((0, 0, 32, 32),
-                                                      dash=(5,5),
+                                                      dash=(5, 5),
                                                       outline="#ddd",
                                                       tag="cursor")
 
@@ -87,6 +84,18 @@ class TileCanvas(Frame):
             v2 = omap.vertexes[l.vx_b]
             self.canvas.create_line(v1.x, v1.y, v2.x, v2.y, fill="#999922", tag="")
 
+    def update_cursor(self, event):
+        coords = self.canvas.coords("cursor")
+        self.set_mouse_tile(event)
+        move_x = ((self.mouse_tile[0] * self.tile_size * self.scale) + self.canvas.coords("anchor")[0]) - coords[0]
+        move_y = ((self.mouse_tile[1] * self.tile_size * self.scale) + self.canvas.coords("anchor")[1]) - coords[1]
+        self.canvas.move("cursor", move_x, move_y)
+
+    def create_tile_at_cursor(self):
+        over_tile = self.get_tile(self.mouse_tile[0], self.mouse_tile[1])
+        if over_tile is None:
+            self.tiles.append(TileItem(self, self.mouse_tile[0], self.mouse_tile[1], 0))
+
     # Event handlers
     def on_key_down(self, event):
         if event.char == " ":
@@ -102,9 +111,12 @@ class TileCanvas(Frame):
         self.config(width=self.width, height=self.height)
 
     def on_mouse_down(self, event):
+        self.update_cursor(event)
+        self.create_tile_at_cursor()
         self.mouse_down = True
 
     def on_mouse_up(self, event):
+        self.update_cursor(event)
         self.mouse_down = False
 
     def on_mouse_wheel(self, event):
@@ -119,18 +131,11 @@ class TileCanvas(Frame):
         self.last_pos = (event.x, event.y)
 
         # Cursor
-        coords = self.canvas.coords("cursor")
-        self.set_mouse_tile(event)
-        move_x = ((self.mouse_tile[0] * self.tile_size * self.scale) + self.canvas.coords("anchor")[0]) - coords[0]
-        move_y = ((self.mouse_tile[1] * self.tile_size * self.scale) + self.canvas.coords("anchor")[1]) - coords[1]
-        self.canvas.move("cursor", move_x, move_y)
+        self.update_cursor(event)
 
         # Draw Tiles
         if self.mouse_down:
-            over_tile = self.get_tile(self.mouse_tile[0], self.mouse_tile[1])
-
-            if over_tile is None:
-                self.tiles.append(TileItem(self, self.mouse_tile[0], self.mouse_tile[1], 0))
+            self.create_tile_at_cursor()
 
         # Canvas dragging
         if self.dragging:
