@@ -1,22 +1,28 @@
+# Description: Main UI window and entry point for the application
+
 from Tkinter import *
-import tilecanvas
-import tile2doom
+
+from ui import propertiespanel
+from ui import tilecanvas
+from util import tile2doom
 
 
 class App(Tk):
     def __init__(self, parent):
         Tk.__init__(self, parent)
         self.geometry("800x600")
+
+        self.propertiespanel = propertiespanel.PropertiesPanel(self, self.save_map)
+        self.propertiespanel.pack(fill=BOTH, side=RIGHT)
+
+        self.sectormanager = self.propertiespanel.sectormanager
+
         self.tilecanvas = tilecanvas.TileCanvas(self)
-        self.tilecanvas.grid(column=0, row=0, sticky=NSEW)
-        self.tilecanvas.columnconfigure(0, weight=1)
-        self.tilecanvas.rowconfigure(0, weight=1)
+        self.tilecanvas.pack(fill=BOTH, expand=1, side=LEFT)
 
-        self.save_button = Button(self, text="save", command=self.save_onclick)
-        self.save_button.grid(column=0, row=1)
-        self.tilecanvas.rowconfigure(0, weight=0)
+        self.pack_propagate(False)
 
-    def save_onclick(self):
+    def save_map(self):
         data = dict()
         data["version"] = "0.1"
         data["tiles"] = self.tilecanvas.export_tiles()
@@ -25,16 +31,7 @@ class App(Tk):
         data["format"] = "coords"
         data["tilesize"] = self.tilecanvas.tile_size
         data["void"] = 0
-        data["sectors"] = [{"texture": "METAL2",
-                            "floor": "FLOOR7_1",
-                            "ceil": "F_SKY1",
-                            "z_floor": 0,
-                            "z_ceil": 128},
-                           {"texture": "BIGBRIK2",
-                            "floor": "FLAT5",
-                            "ceil": "FLOOR7_2",
-                            "z_floor": 8,
-                            "z_ceil": 112}]
+        data["sectors"] = self.sectormanager.export_sectors()
         owad = tile2doom.json2doom(data)
         owad.to_file("output.wad")
 

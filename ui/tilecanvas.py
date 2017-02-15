@@ -1,3 +1,5 @@
+# Description: Main handler and UI for tile editing
+
 from Tkinter import *
 import math
 
@@ -16,7 +18,7 @@ class TileItem:
         y2 = y1 + tilesize_scaled
         self.id = self.canvas.create_rectangle((x1, y1, x2, y2),
                                                outline="white",
-                                               fill="#{}{}{}".format(sector, sector, sector))
+                                               fill="#{}{}{}".format(sector * 3, sector * 3, sector * 3))
 
     def destroy(self):
         self.canvas.delete(self.id)
@@ -30,6 +32,8 @@ class TileCanvas(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
         self.canvas = Canvas(self)
+
+        self.sectormanager = parent.sectormanager
 
         # Layout
         self.canvas.config(bg="#222222")
@@ -110,7 +114,7 @@ class TileCanvas(Frame):
 
     def create_tile_at_cursor(self):
         over_tile = self.get_tile(self.mouse_tile[0], self.mouse_tile[1])
-        if over_tile is None:
+        if over_tile is None or over_tile.sector != self.draw_sector:
             self.tiles.append(TileItem(self, self.mouse_tile[0], self.mouse_tile[1], self.draw_sector))
 
             if self.map_bounds[0] > self.mouse_tile[0]:
@@ -129,11 +133,15 @@ class TileCanvas(Frame):
 
         if event.char == "]":
             self.draw_sector += 1
+            if self.draw_sector >= len(self.sectormanager.sectors):
+                self.draw_sector = len(self.sectormanager.sectors)
+            self.sectormanager.highlight(self.draw_sector)
 
         if event.char == "[":
             self.draw_sector -= 1
             if self.draw_sector < 0:
                 self.draw_sector = 0
+            self.sectormanager.highlight(self.draw_sector)
 
     def on_key_up(self, event):
         if event.char == " ":

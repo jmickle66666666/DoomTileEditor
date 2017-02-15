@@ -1,3 +1,5 @@
+# Description: converts tile data to doom data
+
 import omg, random, json
 
 # global var for how big the tiles need to be
