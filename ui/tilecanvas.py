@@ -78,7 +78,7 @@ class TileCanvas(Frame):
             ar = i.to_array()
             output.append([
                 ar[0] - self.map_bounds[0],
-                ar[1] - self.map_bounds[1],
+                self.map_bounds[1] - ar[1],
                 ar[2]
             ])
         return output
