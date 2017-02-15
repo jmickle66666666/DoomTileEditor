@@ -35,7 +35,6 @@ class App(Tk):
                             "ceil": "FLOOR7_2",
                             "z_floor": 8,
                             "z_ceil": 112}]
-        print data
         owad = tile2doom.json2doom(data)
         owad.to_file("output.wad")
 
