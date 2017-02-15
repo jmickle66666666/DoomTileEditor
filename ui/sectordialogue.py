@@ -3,10 +3,11 @@ import sectormanager
 
 
 class SectorDialogue(Tk):
-    def __init__(self, parent, sectorinfo=None, callback=None):
+    def __init__(self, parent, sectormanager=None, sectorinfo=None, callback=None):
         Tk.__init__(self, parent)
         self.title("Sector")
         self.callback = callback
+        self.sectormanager = sectormanager
 
         self.entry_frame = Frame(self)
         self.button_frame = Frame(self)
@@ -20,7 +21,7 @@ class SectorDialogue(Tk):
         self.ceil_entry = Entry(self.entry_frame)
 
         self.save_button = Button(self.button_frame, text="Save", command=self.save_data)
-        self.cancel_button = Button(self.button_frame, text="Cancel")
+        self.cancel_button = Button(self.button_frame, text="Cancel", command=self.close)
 
         # Opened Data
         if sectorinfo is not None:
@@ -49,7 +50,12 @@ class SectorDialogue(Tk):
         output.ceil = self.ceil_entry.get()
         output.z_floor = 0  # TODO: add fields for floor/height!
         output.z_ceil = 128
+        output.sectormanager = self.sectormanager
         self.callback(output)
+        self.close()
+
+    def close(self):
+        self.destroy()
 
 
 if __name__ == "__main__":

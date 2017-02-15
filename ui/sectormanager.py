@@ -76,7 +76,7 @@ class SectorManager(Frame):
             new_frame.grid()
 
     def create_sector(self):
-        sectordialogue.SectorDialogue(None, None, self.add_sector)
+        sectordialogue.SectorDialogue(None, self, None, self.add_sector)
 
     def add_sector(self, sectorinfo):
         self.sectors.append(sectorinfo)
