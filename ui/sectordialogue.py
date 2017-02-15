@@ -1,10 +1,12 @@
 from Tkinter import *
+import sectormanager
 
 
 class SectorDialogue(Tk):
-    def __init__(self, parent, sectorinfo=None):
+    def __init__(self, parent, sectorinfo=None, callback=None):
         Tk.__init__(self, parent)
         self.title("Sector")
+        self.callback = callback
 
         self.entry_frame = Frame(self)
         self.button_frame = Frame(self)
@@ -17,7 +19,7 @@ class SectorDialogue(Tk):
         self.floor_entry = Entry(self.entry_frame)
         self.ceil_entry = Entry(self.entry_frame)
 
-        self.save_button = Button(self.button_frame, text="Save")
+        self.save_button = Button(self.button_frame, text="Save", command=self.save_data)
         self.cancel_button = Button(self.button_frame, text="Cancel")
 
         # Opened Data
@@ -39,6 +41,16 @@ class SectorDialogue(Tk):
 
         self.entry_frame.grid(column=0, row=0)
         self.button_frame.grid(column=0, row=1)
+
+    def save_data(self):
+        output = sectormanager.SectorInfo(None)
+        output.texture = self.texture_entry.get()
+        output.floor = self.floor_entry.get()
+        output.ceil = self.ceil_entry.get()
+        output.z_floor = 0  # TODO: add fields for floor/height!
+        output.z_ceil = 128
+        self.callback(output)
+
 
 if __name__ == "__main__":
     app = SectorDialogue(None)

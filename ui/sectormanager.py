@@ -2,6 +2,7 @@
 
 from Tkinter import *
 import random
+import sectordialogue
 
 
 class SectorInfo:
@@ -61,9 +62,8 @@ class SectorManager(Frame):
         self.sector_frame.grid(row=0)
 
         self.sectors = []
-        self.add_sector()
 
-        add_button = Button(self, text="Add Sector", command=self.add_sector)
+        add_button = Button(self, text="Add Sector", command=self.create_sector)
         add_button.grid(column=0, row=1)
 
     def update_frame(self):
@@ -75,8 +75,11 @@ class SectorManager(Frame):
             new_frame = s.get_frame(self.sector_frame, self.highlighted - 1 == self.sectors.index(s))
             new_frame.grid()
 
-    def add_sector(self):
-        self.sectors.append(SectorInfo(self))
+    def create_sector(self):
+        sectordialogue.SectorDialogue(None, None, self.add_sector)
+
+    def add_sector(self, sectorinfo):
+        self.sectors.append(sectorinfo)
         self.update_frame()
 
     def export_sectors(self):
