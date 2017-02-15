@@ -11,6 +11,7 @@ class App(Tk):
     def __init__(self, parent):
         Tk.__init__(self, parent)
         self.geometry("800x600")
+        self.title("DoomTileEditor")
 
         self.propertiespanel = propertiespanel.PropertiesPanel(self, self.save_map)
         self.propertiespanel.pack(fill=BOTH, side=RIGHT)
