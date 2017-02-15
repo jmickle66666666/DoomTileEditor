@@ -12,14 +12,17 @@ class TileItem:
         tilesize_scaled = tilecanvas.tile_size * tilecanvas.scale
         x1 = (x * tilesize_scaled) + self.canvas.coords("anchor")[0]
         y1 = (y * tilesize_scaled) + self.canvas.coords("anchor")[1]
-        x2 = x1 + (tilesize_scaled)
-        y2 = y1 + (tilesize_scaled)
+        x2 = x1 + tilesize_scaled
+        y2 = y1 + tilesize_scaled
         self.id = self.canvas.create_rectangle((x1, y1, x2, y2),
                                                outline="white",
-                                               fill="#444")
+                                               fill="#{}{}{}".format(sector, sector, sector))
 
     def destroy(self):
         self.canvas.delete(self.id)
+
+    def to_array(self):
+        return [int(self.x), int(self.y), self.sector]
 
 
 class TileCanvas(Frame):
@@ -48,6 +51,8 @@ class TileCanvas(Frame):
         self.canvas.create_line(0, 0, 1, 1, tag="anchor")
         self.tile_size = 32
         self.tool = "brush"
+        self.draw_sector = 0
+        self.map_bounds = [0, 0, 0, 0]
 
         # Event binding
         self.canvas.bind(sequence="<ButtonPress-1>", func=self.on_mouse_down)
@@ -62,6 +67,23 @@ class TileCanvas(Frame):
                                                       dash=(5, 5),
                                                       outline="#ddd",
                                                       tag="cursor")
+
+    def export_tiles(self):
+        output = []
+        for i in self.tiles:
+            ar = i.to_array()
+            output.append([
+                ar[0] - self.map_bounds[0],
+                ar[1] - self.map_bounds[1],
+                ar[2]
+            ])
+        return output
+
+    def get_width(self):
+        return int(self.map_bounds[2] - self.map_bounds[0]) + 1
+
+    def get_height(self):
+        return int(self.map_bounds[3] - self.map_bounds[1]) + 1
 
     def get_tile(self, x, y):
         for t in self.tiles:
@@ -89,12 +111,29 @@ class TileCanvas(Frame):
     def create_tile_at_cursor(self):
         over_tile = self.get_tile(self.mouse_tile[0], self.mouse_tile[1])
         if over_tile is None:
-            self.tiles.append(TileItem(self, self.mouse_tile[0], self.mouse_tile[1], 0))
+            self.tiles.append(TileItem(self, self.mouse_tile[0], self.mouse_tile[1], self.draw_sector))
+
+            if self.map_bounds[0] > self.mouse_tile[0]:
+                self.map_bounds[0] = self.mouse_tile[0]
+            if self.map_bounds[1] > self.mouse_tile[1]:
+                self.map_bounds[1] = self.mouse_tile[1]
+            if self.map_bounds[2] < self.mouse_tile[0]:
+                self.map_bounds[2] = self.mouse_tile[0]
+            if self.map_bounds[3] < self.mouse_tile[1]:
+                self.map_bounds[3] = self.mouse_tile[1]
 
     # Event handlers
     def on_key_down(self, event):
         if event.char == " ":
             self.dragging = True
+
+        if event.char == "]":
+            self.draw_sector += 1
+
+        if event.char == "[":
+            self.draw_sector -= 1
+            if self.draw_sector < 0:
+                self.draw_sector = 0
 
     def on_key_up(self, event):
         if event.char == " ":
