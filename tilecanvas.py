@@ -28,12 +28,14 @@ class TileCanvas(Frame):
         Frame.__init__(self, parent)
         self.canvas = Canvas(self)
 
-        # Layout and config
+        # Layout
         self.canvas.config(bg="#222222")
         self.canvas.pack(fill=BOTH, expand=YES)
         self.canvas.bind("<Configure>", self.on_resize)
         self.height = self.winfo_reqheight()
         self.width = self.winfo_reqwidth()
+
+        # Settings
         self.dragging = False
         self.last_pos = (0, 0)
         self.scroll_position = [0, 0]
@@ -43,10 +45,9 @@ class TileCanvas(Frame):
         self.scale = 1.0
         self.max_scale = 10.0
         self.min_scale = 0.1
-        self.offset_x = 0
-        self.offset_y = 0
         self.canvas.create_line(0, 0, 1, 1, tag="anchor")
         self.tile_size = 32
+        self.tool = "brush"
 
         # Event binding
         self.canvas.bind(sequence="<ButtonPress-1>", func=self.on_mouse_down)
@@ -106,7 +107,8 @@ class TileCanvas(Frame):
 
     def on_mouse_down(self, event):
         self.update_cursor(event)
-        self.create_tile_at_cursor()
+        if self.tool is "brush":
+            self.create_tile_at_cursor()
         self.mouse_down = True
 
     def on_mouse_up(self, event):
@@ -129,10 +131,9 @@ class TileCanvas(Frame):
 
         # Draw Tiles
         if self.mouse_down:
-            self.create_tile_at_cursor()
+            if self.tool is "brush":
+                self.create_tile_at_cursor()
 
         # Canvas dragging
         if self.dragging:
-            self.offset_x += move[0]
-            self.offset_y += move[1]
             self.canvas.move("all", move[0], move[1])
