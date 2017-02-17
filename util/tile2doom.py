@@ -1,6 +1,8 @@
 # Description: converts tile data to doom data
 
-import omg, random, json
+import omg
+import random
+import json
 
 # global var for how big the tiles need to be
 TILESIZE = 32
@@ -21,27 +23,7 @@ class MapSector:
 
     # returns a new doom format sector, using the flats and z_ heights defined
     def get_sector(self):
-        return omg.mapedit.Sector(tx_ceil=self.ceil,tx_floor=self.floor,z_ceil=self.z_ceil,z_floor=self.z_floor)
-
-
-# convert an image to a set of tiles, using unique colors as indexes. useful for testing, not in practice :)
-def image_to_tiles(img):
-    print "converting image to tiles..."
-    pix = img.load()
-
-    # scan colors in the image first
-    colors = []
-    for i in range(img.size[0]):
-        for j in range(img.size[1]):
-            colors.append(pix[i,j])
-    # remove duplicates
-    colors = sorted(list(set(colors)))
-    
-    output = [[-1 for y in range(img.size[0])] for x in range(img.size[1])]
-    for i in range(img.size[0]):
-        for j in range(img.size[1]):
-            output[i][j] = colors.index(pix[i,j])
-    return output
+        return omg.mapedit.Sector(tx_ceil=self.ceil, tx_floor=self.floor, z_ceil=self.z_ceil, z_floor=self.z_floor)
 
 
 # Line class for use before converting into a doom format line
@@ -57,17 +39,21 @@ class MapLine:
         # this is for line merging, if its a cardinal direction store a value, otherwise
         # just make sure two lines don't get merged automatically. not a cool method
         self.angle = random.random()
-        if self.x1 == self.x2 and self.y1 < self.y2: self.angle = 0
-        if self.x1 == self.x2 and self.y1 > self.y2: self.angle = 1
-        if self.y1 == self.y2 and self.x1 < self.x2: self.angle = 2
-        if self.y1 == self.y2 and self.x1 > self.x2: self.angle = 3
+        if self.x1 == self.x2 and self.y1 < self.y2:
+            self.angle = 0
+        if self.x1 == self.x2 and self.y1 > self.y2:
+            self.angle = 1
+        if self.y1 == self.y2 and self.x1 < self.x2:
+            self.angle = 2
+        if self.y1 == self.y2 and self.x1 > self.x2:
+            self.angle = 3
 
     # return tuples of the position
     def v1(self):
-        return (self.x1, self.y1)
+        return self.x1, self.y1
 
     def v2(self):
-        return (self.x2, self.y2)
+        return self.x2, self.y2
 
     # check if two lines share a point, but not the same point!
     @staticmethod
@@ -115,7 +101,7 @@ def tiles2linedata(tiles, void):
                 # vertical
                 if tiles[i][j] != void:
                     maplines.append(MapLine((i*TILESIZE) + TILESIZE, (j*TILESIZE) + TILESIZE, (i*TILESIZE) + TILESIZE,
-                                            (j*TILESIZE) , tiles[i][j], tiles[i+1][j]))
+                                            (j*TILESIZE), tiles[i][j], tiles[i+1][j]))
                 else:
                     maplines.append(MapLine((i*TILESIZE) + TILESIZE, (j*TILESIZE), (i*TILESIZE) + TILESIZE,
                                             (j*TILESIZE) + TILESIZE, tiles[i+1][j], void))
@@ -127,7 +113,7 @@ def tiles2linedata(tiles, void):
             elif tiles[i][j] != tiles[i][j+1]:
                 # horizontal
                 if tiles[i][j] != void:
-                    maplines.append(MapLine((i*TILESIZE) , (j*TILESIZE) + TILESIZE, (i*TILESIZE) + TILESIZE,
+                    maplines.append(MapLine((i*TILESIZE), (j*TILESIZE) + TILESIZE, (i*TILESIZE) + TILESIZE,
                                             (j*TILESIZE) + TILESIZE, tiles[i][j], tiles[i][j+1]))
                 else:
                     maplines.append(MapLine((i*TILESIZE)+TILESIZE, (j*TILESIZE) + TILESIZE, (i*TILESIZE),
@@ -138,7 +124,7 @@ def tiles2linedata(tiles, void):
 
     mergeone = True  # we break out of the loop every time we create a line, this is necessary to make sure it works
     timeout = 1000  # just in case. might get rid of this since it works now
-    print "map lines at start: {}".format(len(maplines)) # lets see how many lines we saved! spoilers: a lot
+    print "map lines at start: {}".format(len(maplines))  # lets see how many lines we saved! spoilers: a lot
     while mergeone is True and timeout > 0:
         timeout -= 1 
         mergeone = False
@@ -217,17 +203,6 @@ def linedata2doom(lines, mapsectors):
     return _wad
 
 
-# convert an image all the way to a doom map, fun!
-def image2tiles2lines2doom(image, mapsectors, void):
-    print "image to tiles" 
-    tiles = image_to_tiles(image)
-    print "tiles 2 linedata"
-    lines = tiles2linedata(tiles, void)
-    print "linedata 2 doom"
-    output = linedata2doom(lines, mapsectors)
-    return output
-
-
 # convert tiles to a doom map
 def tile2doom(tiles, mapsectors, void):
     print "converting tiles to map"
@@ -237,19 +212,20 @@ def tile2doom(tiles, mapsectors, void):
     player_placed = 0
 
     for i in range(len(tiles)):
-        print "tile {}/{}".format(i+1,len(tiles))
+        print "tile {}/{}".format(i+1, len(tiles))
         for j in range(len(tiles[i])):
             if tiles[i][j] != void:
                 ms = mapsectors[tiles[i][j] - 1]
                 if player_placed == 0:
                     player_placed = 1
-                    omap.things.append(omg.mapedit.Thing(x=(i*TILESIZE)+(TILESIZE/2),y=(j*TILESIZE)+(TILESIZE/2),type=1))
-                verts = []
+                    omap.things.append(omg.mapedit.Thing(x=(i*TILESIZE)+(TILESIZE/2),
+                                                         y=(j*TILESIZE)+(TILESIZE/2), type=1))
+                verts = list()
                 verts.append((i * TILESIZE, j * TILESIZE))
                 verts.append(((i+1) * TILESIZE, j * TILESIZE))
                 verts.append(((i+1) * TILESIZE, (j+1) * TILESIZE))
                 verts.append((i * TILESIZE, (j+1) * TILESIZE))
-                omap.draw_sector(verts,sector=ms.get_sector(),sidedef=ms.get_sidedef())
+                omap.draw_sector(verts,sector=ms.get_sector(), sidedef=ms.get_sidedef())
 
     _wad.maps["MAP01"] = omap.to_lumps()
 
@@ -268,7 +244,7 @@ def coords22darray(coords, width, height, void):
 def load_json_sectors(json_sectors):
     output = []
     for s in json_sectors:
-        output.append(MapSector(s["texture"],s["floor"],s["ceil"],s["z_floor"],s["z_ceil"]))
+        output.append(MapSector(s["texture"], s["floor"], s["ceil"], s["z_floor"], s["z_ceil"]))
     return output
 
 
@@ -280,6 +256,7 @@ def json2doom(data):
 
     global TILESIZE
     TILESIZE = data["tilesize"]
+    lines = None
     # to lines
 
     # 2darray vs coords:
@@ -305,8 +282,10 @@ def json2doom(data):
         tiles = coords22darray(data["tiles"], data["width"], data["height"], data["void"])
         lines = tiles2linedata(tiles, data["void"])
 
-    output = linedata2doom(lines, load_json_sectors(data["sectors"]))
-    return output
+    if lines is not None:
+        output = linedata2doom(lines, load_json_sectors(data["sectors"]))
+        return output
+    return None
 
 # test stuff
 if __name__ == "__main__":

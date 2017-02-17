@@ -40,6 +40,8 @@ class SectorDialogue(Tk):
             self.texture_entry.insert(0, sectorinfo.texture)
             self.floor_entry.insert(0, sectorinfo.floor)
             self.ceil_entry.insert(0, sectorinfo.ceil)
+            self.z_floor_entry.insert(0, sectorinfo.z_floor)
+            self.z_ceil_entry.insert(0, sectorinfo.z_ceil)
 
         # Layout
         self.texture_label.grid(column=0, row=0)
@@ -78,7 +80,8 @@ class SectorDialogue(Tk):
             )
             return
         output.sectormanager = self.sectormanager
-        self.callback(output)
+        if self.callback is not None:
+            self.callback(output)
         self.close()
 
     def validate_z_floor(self):

@@ -34,6 +34,8 @@ class SectorInfo:
         separator.grid(column=0, row=0, columnspan=2)
 
         delete_button = Button(output, text="X", command=self.delete)
+        edit_button = Button(output, text="Edit", command=self.edit)
+
         texture_label = Label(output, text=self.texture, anchor=W)
         floor_label = Label(output, text=self.floor, anchor=W)
         ceil_label = Label(output, text=self.ceil, anchor=W)
@@ -42,14 +44,26 @@ class SectorInfo:
         floor_label.grid(column=0, row=2)
         ceil_label.grid(column=0, row=3)
         delete_button.grid(column=1, row=1)
+        edit_button.grid(column=1, row=3)
 
         texture_label.columnconfigure(0, weight=1)
 
         return output
 
+    def replace(self, sectorinfo):
+        self.texture = sectorinfo.texture
+        self.floor = sectorinfo.floor
+        self.ceil = sectorinfo.ceil
+        self.z_floor = sectorinfo.z_floor
+        self.z_ceil = sectorinfo.z_ceil
+        self.sectormanager.update_frame()
+
     def delete(self):
         del self.sectormanager.sectors[self.sectormanager.sectors.index(self)]
         self.sectormanager.update_frame()
+
+    def edit(self):
+        sectordialogue.SectorDialogue(None, self.sectormanager, self, self.replace)
 
 
 class SectorManager(Frame):
