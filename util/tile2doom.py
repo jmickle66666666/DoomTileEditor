@@ -198,6 +198,10 @@ def linedata2doom(lines, mapsectors):
             fsd = omap.sidedefs[ld.front]
             ld.back = get_sidedef(omap, fsd.tx_mid, fsd.tx_mid, '-', bsd.sector)
             ld.front = get_sidedef(omap, bsd.tx_mid, bsd.tx_mid, '-', fsd.sector)
+            ld.two_sided = True
+            ld.impassable = False
+        else:
+            ld.impassable = True
 
     _wad.maps["MAP01"] = omap.to_lumps()
     return _wad
