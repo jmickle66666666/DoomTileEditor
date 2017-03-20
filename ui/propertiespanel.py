@@ -10,8 +10,5 @@ class PropertiesPanel(Frame):
 
         self.config(border=3, relief=RIDGE, width=150)
 
-        self.save_button = Button(self, text="save", command=save_callback)
-        self.save_button.grid(column=0,row=0)
-
         self.sectormanager = sectormanager.SectorManager(self)
         self.sectormanager.grid(column=0, row=1, sticky=NSEW)

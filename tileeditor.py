@@ -20,6 +20,7 @@ class App(Tk):
         self.sectormanager = None
         self.splashscreen = None
         self.menubar = None
+        self.file_menu = None
 
         self.init_menubar()
         self.splash_screen()
@@ -50,25 +51,38 @@ class App(Tk):
 
         self.pack_propagate(False)
 
+        self.enable_map_menu_options()
+
     def splash_screen(self):
         self.splashscreen = splashscreen.SplashScreen(self)
         self.splashscreen.pack(fill=BOTH, expand=1)
+        self.disable_map_menu_options()
 
     def close_map(self):
         self.propertiespanel.destroy()
         self.tilecanvas.destroy()
         self.splash_screen()
+        self.disable_map_menu_options()
 
     def close_splash(self):
         self.splashscreen.destroy()
 
+    def enable_map_menu_options(self):
+        self.file_menu.entryconfig("Save map", state="normal")
+        self.file_menu.entryconfig("Close map", state="normal")
+
+    def disable_map_menu_options(self):
+        self.file_menu.entryconfig("Save map", state="disabled")
+        self.file_menu.entryconfig("Close map", state="disabled")
+
     def init_menubar(self):
         self.menubar = Menu(self)
-        file_menu = Menu(self)
-        self.menubar.add_cascade(label="File", menu=file_menu)
-        file_menu.add_command(label="New map", command=self.new_map)
-        file_menu.add_command(label="Close map", command=self.close_map)
-        file_menu.add_command(label="Quit", command=self.quit)
+        self.file_menu = Menu(self)
+        self.menubar.add_cascade(label="File", menu=self.file_menu)
+        self.file_menu.add_command(label="New map", command=self.new_map)
+        self.file_menu.add_command(label="Save map", command=self.save_map)
+        self.file_menu.add_command(label="Close map", command=self.close_map)
+        self.file_menu.add_command(label="Quit", command=self.quit)
         self.config(menu=self.menubar)
 
 
