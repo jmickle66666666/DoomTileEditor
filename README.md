@@ -3,6 +3,7 @@
 ## requirements
 * omgifol https://github.com/devinacker/omgifol
 * python 2.7.x https://www.python.org/
+* PIL
 
 ## run it
 `python tileeditor.py`
