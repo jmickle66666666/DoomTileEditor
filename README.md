@@ -6,3 +6,6 @@
 
 ## run it
 `python tileeditor.py`
+
+## modifying
+first run compile_resources.py whenever modifying the contents of res/ to generate a new res.py
