@@ -4,6 +4,7 @@ from Tkinter import *
 
 from ui import propertiespanel
 from ui import tilecanvas
+from ui import splashscreen
 from util import tile2doom
 
 
@@ -14,15 +15,13 @@ class App(Tk):
         self.title("DoomTileEditor")
         self.focus_force()
 
-        self.propertiespanel = propertiespanel.PropertiesPanel(self, self.save_map)
-        self.propertiespanel.pack(fill=BOTH, side=RIGHT)
+        self.tilecanvas = None
+        self.propertiespanel = None
+        self.sectormanager = None
+        self.splashscreen = None
 
-        self.sectormanager = self.propertiespanel.sectormanager
-
-        self.tilecanvas = tilecanvas.TileCanvas(self)
-        self.tilecanvas.pack(fill=BOTH, expand=1, side=LEFT)
-
-        self.pack_propagate(False)
+        self.new_map()
+        self.close_map()
 
     def save_map(self):
         data = dict()
@@ -36,6 +35,26 @@ class App(Tk):
         data["sectors"] = self.sectormanager.export_sectors()
         owad = tile2doom.json2doom(data)
         owad.to_file("output.wad")
+
+    def new_map(self):
+        self.propertiespanel = propertiespanel.PropertiesPanel(self, self.save_map)
+        self.propertiespanel.pack(fill=BOTH, side=RIGHT)
+
+        self.sectormanager = self.propertiespanel.sectormanager
+
+        self.tilecanvas = tilecanvas.TileCanvas(self)
+        self.tilecanvas.pack(fill=BOTH, expand=1, side=LEFT)
+
+        self.pack_propagate(False)
+
+    def splash_screen(self):
+        self.splashscreen = splashscreen.SplashScreen(self)
+        self.splashscreen.pack(fill=BOTH)
+
+    def close_map(self):
+        self.propertiespanel.destroy()
+        self.tilecanvas.destroy()
+        self.splash_screen()
 
 if __name__ == "__main__":
     app = App(None)
