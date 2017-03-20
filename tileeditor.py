@@ -19,9 +19,10 @@ class App(Tk):
         self.propertiespanel = None
         self.sectormanager = None
         self.splashscreen = None
+        self.menubar = None
 
-        self.new_map()
-        self.close_map()
+        self.init_menubar()
+        self.splash_screen()
 
     def save_map(self):
         data = dict()
@@ -37,6 +38,8 @@ class App(Tk):
         owad.to_file("output.wad")
 
     def new_map(self):
+        self.close_splash()
+
         self.propertiespanel = propertiespanel.PropertiesPanel(self, self.save_map)
         self.propertiespanel.pack(fill=BOTH, side=RIGHT)
 
@@ -55,6 +58,20 @@ class App(Tk):
         self.propertiespanel.destroy()
         self.tilecanvas.destroy()
         self.splash_screen()
+
+    def close_splash(self):
+        self.splashscreen.destroy()
+
+    def init_menubar(self):
+        self.menubar = Menu(self)
+        file_menu = Menu(self)
+        self.menubar.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="New map", command=self.new_map)
+        file_menu.add_command(label="Close map", command=self.close_map)
+        file_menu.add_command(label="Quit", command=self.quit)
+        self.config(menu=self.menubar)
+        print("hello??")
+
 
 if __name__ == "__main__":
     app = App(None)
