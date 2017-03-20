@@ -52,7 +52,7 @@ class App(Tk):
 
     def splash_screen(self):
         self.splashscreen = splashscreen.SplashScreen(self)
-        self.splashscreen.pack(fill=BOTH)
+        self.splashscreen.pack(fill=BOTH, expand=1)
 
     def close_map(self):
         self.propertiespanel.destroy()
@@ -70,7 +70,6 @@ class App(Tk):
         file_menu.add_command(label="Close map", command=self.close_map)
         file_menu.add_command(label="Quit", command=self.quit)
         self.config(menu=self.menubar)
-        print("hello??")
 
 
 if __name__ == "__main__":
