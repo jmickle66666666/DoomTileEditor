@@ -41,7 +41,7 @@ class App(Tk):
     def new_map(self):
         self.close_splash()
 
-        self.propertiespanel = propertiespanel.PropertiesPanel(self, self.save_map)
+        self.propertiespanel = propertiespanel.PropertiesPanel(self)
         self.propertiespanel.pack(fill=BOTH, side=RIGHT)
 
         self.sectormanager = self.propertiespanel.sectormanager
