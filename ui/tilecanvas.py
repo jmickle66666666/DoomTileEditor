@@ -1,5 +1,4 @@
 # Description: Main handler and UI for tile editing
-
 from Tkinter import *
 import math
 

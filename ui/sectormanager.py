@@ -1,5 +1,4 @@
 # UI and data manager for sectors, handles adding/editing/removing sectors.
-
 from Tkinter import *
 import random
 import sectordialogue

@@ -1,5 +1,6 @@
 # The UI and functionality for browsing and selecting textures from texture collections
 from Tkinter import *
+from ttk import *
 import res
 from util import resutil
 

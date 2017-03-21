@@ -1,11 +1,10 @@
 # Description: UI manager for the main sidebar
-
 from Tkinter import *
 import sectormanager
 
 
 class PropertiesPanel(Frame):
-    def __init__(self, parent, save_callback):
+    def __init__(self, parent):
         Frame.__init__(self, parent)
 
         self.config(border=3, relief=RIDGE, width=150)

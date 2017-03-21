@@ -1,4 +1,5 @@
 from Tkinter import *
+from ttk import *
 import tkMessageBox
 import sectormanager
 
@@ -12,7 +13,7 @@ class SectorDialogue(Tk):
 
         self.callback = callback
         self.sectormanager = sector_manager
-        self.mainframe = Frame(self, padx=10, pady=10)
+        self.mainframe = Frame(self, padding=10)
 
         self.entry_frame = Frame(self.mainframe)
         self.button_frame = Frame(self.mainframe)
