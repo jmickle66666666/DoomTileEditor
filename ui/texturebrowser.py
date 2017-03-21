@@ -1,5 +1,5 @@
 # The UI and functionality for browsing and selecting textures from texture collections
-from Tkinter import *
+from Tkinter import Tk
 from ttk import *
 import res
 from util import resutil
@@ -10,19 +10,16 @@ class TextureItem(Frame):
     def __init__(self, parent, name, photoimage):
         Frame.__init__(self, parent)
 
-        self.image_label = Label(self, image=photoimage, width=100, height=100)
+        self.image_label = Label(self, text=name, image=photoimage, width=20, compound="top")
         self.image_label.photo = photoimage
         self.image_label.pack(expand=0)
-
-        self.name_label = Label(self, text=name, width=100)
-        self.name_label.pack(expand=0)
 
 
 # The panel to list all the textures in a single collection
 class TextureGrid(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
-        self.config(width=200, height=200, bg="#555555", bd=2, relief=SUNKEN)
+        self.config(width=200, height=200)
 
         self.splashimage = resutil.load_photoimage(res.temp_splash)
         self.test_item = TextureItem(self, "testname", self.splashimage)
@@ -33,7 +30,7 @@ class TextureGrid(Frame):
 class TextureCollectionList(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
-        self.config(width=200, bg="#333333")
+        self.config(width=200)
 
 
 # The master window for the texture browser
@@ -44,7 +41,7 @@ class TextureBrowser(Tk):
         self.focus_force()
 
         self.texture_collection_list = TextureCollectionList(self)
-        self.texture_collection_list.grid(column=1, row=0, sticky=NS)
+        self.texture_collection_list.grid(column=1, row=0, sticky="NS")
 
         self.texture_grid = TextureGrid(self)
         self.texture_grid.grid(column=0, row=0, sticky="NSEW")
@@ -54,6 +51,5 @@ class TextureBrowser(Tk):
 
 
 if __name__ == "__main__":
-    print "1"
     app = TextureBrowser(None)
     app.mainloop()
