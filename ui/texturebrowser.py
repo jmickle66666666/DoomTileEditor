@@ -3,6 +3,8 @@ from Tkinter import *
 from util import texturecollection
 from PIL import ImageTk
 
+PREVIEW_SIZE = 128
+
 
 # A single texture element. A square containing the preview and name of the texture
 class TextureItem:
@@ -16,9 +18,9 @@ class TextureItem:
         text_offset_x = 5
         text_offset_y = 3
         text_bg_color = "#999999"
-        highlight_color = "#FFFFFF"
+        highlight_color = "#BBBBBB"
 
-        self.highlight_id = self.canvas.create_rectangle((-2, -2, 101, 101),
+        self.highlight_id = self.canvas.create_rectangle((-2, -2, PREVIEW_SIZE+1, PREVIEW_SIZE+1),
                                                          fill=highlight_color,
                                                          outline=highlight_color)
 
@@ -76,7 +78,7 @@ class TextureGrid(Frame):
         self.row_item_count = 1
 
         # this is how much space is between items
-        self.item_space = 110
+        self.item_space = PREVIEW_SIZE + 10
 
     # Add a new texture item
     def add_item(self, name, image):
@@ -97,13 +99,15 @@ class TextureGrid(Frame):
     def load_texture_collection(self, tc):
         self.texture_items = []
         for t in tc.textures:
-            thumbnail = tc.textures[t].resize((100, 100))
+            ratio = float(PREVIEW_SIZE) / max(tc.textures[t].width, tc.textures[t].height)
+            thumbnail = tc.textures[t].resize((int(tc.textures[t].width * ratio), int(tc.textures[t].height * ratio)))
+
             photoimage = ImageTk.PhotoImage(thumbnail)
             self.add_item(t, photoimage)
         self.reposition_items()
 
     def calculate_row_size(self):
-        self.row_item_count = max((self.canvas.winfo_width()+20) // 110, 1)
+        self.row_item_count = max((self.canvas.winfo_width()+20) // self.item_space, 1)
 
     def on_resize(self, event):
         self.config(width=event.width, height=event.height)
@@ -155,8 +159,8 @@ class TextureBrowser(Tk):
 
 
 if __name__ == "__main__":
-    test_textures_path = "/Users/jerry.micklethwaite/Dropbox/projects/games/2016/SLDR/metals/"
-    tc = texturecollection.TextureCollection.load_folder(test_textures_path)
+    test_textures_path = "/Users/jerry.micklethwaite/Documents/doom/DOOM2.WAD"
+    tc = texturecollection.TextureCollection.load_doom_wad(test_textures_path)
     app = TextureBrowser(None)
     app.texture_grid.load_texture_collection(tc)
     app.mainloop()
