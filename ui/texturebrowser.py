@@ -44,13 +44,15 @@ class TextureGrid(Frame):
         Frame.__init__(self, parent)
         self.config(width=200, height=200)
 
-        self.canvas = Canvas(self, width=500, height=500)
+        self.canvas = Canvas(self)
         self.canvas.config(bg="#252321")
-        self.canvas.pack(side=LEFT)
+        self.canvas.pack(side=LEFT, fill=BOTH, expand=1)
+        self.canvas.bind("<Configure>", self.on_resize)
 
         self.scrollbar = Scrollbar(self, orient=VERTICAL)
         self.scrollbar.pack(side=RIGHT, fill=Y)
         self.scrollbar.config(command=self.canvas.yview)
+        self.canvas.bind(sequence="<MouseWheel>", func=self.on_mouse_wheel)
 
         self.canvas.config(yscrollcommand=self.scrollbar.set)
 
@@ -59,12 +61,6 @@ class TextureGrid(Frame):
 
         # this is how much space is between items
         self.item_space = 110
-
-        # self.photo = resutil.load_photoimage_resized(res.temp_splash, (100, 100))
-        # self.add_item("test1", self.photo)
-        # self.add_item("test2", self.photo)
-        # self.add_item("test3", self.photo)
-        # self.reposition_items()
 
     # Add a new texture item
     def add_item(self, name, image):
@@ -91,8 +87,14 @@ class TextureGrid(Frame):
         self.reposition_items()
 
     def calculate_row_size(self):
-        self.row_item_count = max((self.canvas.winfo_reqwidth()+20) // 110, 1)
+        self.row_item_count = max((self.canvas.winfo_width()+20) // 110, 1)
 
+    def on_resize(self, event):
+        self.config(width=event.width, height=event.height)
+        self.reposition_items()
+
+    def on_mouse_wheel(self, event):
+        self.canvas.yview("scroll", -event.delta, "units")
 
 # A list to show and select one of the currently available texture collections to browse
 class TextureCollectionList(Frame):
