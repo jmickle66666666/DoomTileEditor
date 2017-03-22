@@ -16,6 +16,11 @@ class TextureItem:
         text_offset_x = 5
         text_offset_y = 3
         text_bg_color = "#999999"
+        highlight_color = "#FFFFFF"
+
+        self.highlight_id = self.canvas.create_rectangle((-2, -2, 101, 101),
+                                                         fill=highlight_color,
+                                                         outline=highlight_color)
 
         self.image_id = self.canvas.create_image((self.x, self.y),
                                                  image=self.image,
@@ -28,14 +33,24 @@ class TextureItem:
         self.rect_id = self.canvas.create_rectangle(self.canvas.bbox(self.text_id),
                                                     fill=text_bg_color,
                                                     outline=text_bg_color)
+
         self.canvas.tag_raise(self.text_id)
+
+        self.unhighlight()
 
     def move_to(self, x, y):
         self.canvas.move(self.image_id, x - self.x, y - self.y)
         self.canvas.move(self.text_id, x - self.x, y - self.y)
         self.canvas.move(self.rect_id, x - self.x, y - self.y)
+        self.canvas.move(self.highlight_id, x - self.x, y - self.y)
         self.x = x
         self.y = y
+
+    def highlight(self):
+        self.canvas.itemconfig(self.highlight_id, state=NORMAL)
+
+    def unhighlight(self):
+        self.canvas.itemconfig(self.highlight_id, state=HIDDEN)
 
 
 # The panel to list all the textures in a single collection
@@ -48,6 +63,7 @@ class TextureGrid(Frame):
         self.canvas.config(bg="#252321")
         self.canvas.pack(side=LEFT, fill=BOTH, expand=1)
         self.canvas.bind("<Configure>", self.on_resize)
+        self.canvas.bind(sequence="<ButtonPress-1>", func=self.on_mouse_down)
 
         self.scrollbar = Scrollbar(self, orient=VERTICAL)
         self.scrollbar.pack(side=RIGHT, fill=Y)
@@ -93,8 +109,23 @@ class TextureGrid(Frame):
         self.config(width=event.width, height=event.height)
         self.reposition_items()
 
+    def on_mouse_down(self, event):
+        c_x = min(event.x // self.item_space, self.row_item_count-1)
+        c_y = self.canvas.canvasy(event.y) // self.item_space
+        texture_index = int((c_y * self.row_item_count) + c_x)
+
+        # here: iterate the texture items and highlight correct one
+        for i in range(len(self.texture_items)):
+            if i == texture_index:
+                self.texture_items[i].highlight()
+            else:
+                self.texture_items[i].unhighlight()
+
+        print self.texture_items[texture_index].name
+
     def on_mouse_wheel(self, event):
         self.canvas.yview("scroll", -event.delta, "units")
+
 
 # A list to show and select one of the currently available texture collections to browse
 class TextureCollectionList(Frame):
