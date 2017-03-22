@@ -41,5 +41,5 @@ class TextureCollection:
                             pixdata[x, y] = (255, 255, 255, 0)
 
                 new_img.paste(pimg, (p.x, p.y), pimg)
-                tc.textures[texturedef] = new_img
+            tc.textures[texturedef] = new_img
         return tc
