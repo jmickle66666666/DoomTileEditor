@@ -1,9 +1,9 @@
 # The UI and functionality for browsing and selecting textures from texture collections
 from Tkinter import *
 from util import texturecollection
-from PIL import ImageTk
+from PIL import Image, ImageTk
 
-PREVIEW_SIZE = 128
+PREVIEW_SIZE = 100
 
 
 # A single texture element. A square containing the preview and name of the texture
@@ -100,7 +100,9 @@ class TextureGrid(Frame):
         self.texture_items = []
         for t in tc.textures:
             ratio = float(PREVIEW_SIZE) / max(tc.textures[t].width, tc.textures[t].height)
-            thumbnail = tc.textures[t].resize((int(tc.textures[t].width * ratio), int(tc.textures[t].height * ratio)))
+            thumbnail = tc.textures[t].resize((int(tc.textures[t].width * ratio),
+                                               int(tc.textures[t].height * ratio)),
+                                              Image.ANTIALIAS)
 
             photoimage = ImageTk.PhotoImage(thumbnail)
             self.add_item(t, photoimage)
