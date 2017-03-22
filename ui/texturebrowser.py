@@ -148,6 +148,7 @@ class TextureBrowser(Tk):
     def __init__(self, parent):
         Tk.__init__(self, parent)
         self.title("Texture Browser")
+        self.geometry("800x600")
         self.focus_force()
 
         self.texture_collection_list = TextureCollectionList(self)
