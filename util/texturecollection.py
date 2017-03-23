@@ -33,17 +33,20 @@ class TextureCollection:
         for texturedef in tex:
             new_img = Image.new("RGBA", (tex[texturedef].width, tex[texturedef].height))
             for p in tex[texturedef].patches:
-                pimg = wad.patches[p.name.upper()].to_Image()
-                pimg = pimg.convert("RGBA")
-                # try and fix transparency issues
-                pixdata = pimg.load()
+                try:
+                    pimg = wad.patches[p.name.upper()].to_Image()
+                    pimg = pimg.convert("RGBA")
+                    # try and fix transparency issues
+                    pixdata = pimg.load()
 
-                width, height = pimg.size
-                for y in range(height):
-                    for x in range(width):
-                        if pixdata[x, y] == (255, 0, 255, 255):
-                            pixdata[x, y] = (255, 255, 255, 0)
+                    width, height = pimg.size
+                    for y in range(height):
+                        for x in range(width):
+                            if pixdata[x, y] == (255, 0, 255, 255):
+                                pixdata[x, y] = (255, 255, 255, 0)
 
-                new_img.paste(pimg, (p.x, p.y), pimg)
+                    new_img.paste(pimg, (p.x, p.y), pimg)
+                except:
+                    pass
             tc.textures[texturedef] = new_img
         return tc

@@ -198,11 +198,10 @@ if __name__ == "__main__":
     test_textures_path = "/Users/jerry.micklethwaite/Documents/doom/freedoom-0.10.1/freedoom1.wad"
     tc = texturecollection.TextureCollection.load_doom_wad(test_textures_path)
     app.texture_collection_list.add_collection(tc)
-    # test_textures_path = "/Users/jerry.micklethwaite/Downloads/btsx_e1/btsx_e1a.wad"
-    # tc = texturecollection.TextureCollection.load_doom_wad(test_textures_path)
-    # app.texture_collection_list.add_collection(tc)
-    # test_textures_path = "/Users/jerry.micklethwaite/Downloads/btsx_e1/btsx_e1b.wad"
-    # tc = texturecollection.TextureCollection.load_doom_wad(test_textures_path)
-    # app.texture_collection_list.add_collection(tc)
-    # app.texture_grid.load_texture_collection(tc)
+    test_textures_path = "/Users/jerry.micklethwaite/Downloads/btsx_e1/btsx_e1a.wad"
+    tc = texturecollection.TextureCollection.load_doom_wad(test_textures_path)
+    app.texture_collection_list.add_collection(tc)
+    test_textures_path = "/Users/jerry.micklethwaite/Downloads/btsx_e1/btsx_e1b.wad"
+    tc = texturecollection.TextureCollection.load_doom_wad(test_textures_path)
+    app.texture_collection_list.add_collection(tc)
     app.mainloop()
