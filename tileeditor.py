@@ -1,7 +1,6 @@
 # Description: Main UI window and entry point for the application
-
-from Tkinter import *
-
+from tkinter import Tk, Menu
+from tkinter.constants import *
 from ui import propertiespanel
 from ui import tilecanvas
 from ui import splashscreen

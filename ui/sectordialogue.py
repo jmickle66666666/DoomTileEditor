@@ -1,7 +1,6 @@
-from Tkinter import *
-from ttk import *
-import tkMessageBox
-import sectormanager
+from tkinter import *
+import tkinter.messagebox
+from ui.sectorinfo import SectorInfo
 
 
 class SectorDialogue(Tk):
@@ -13,7 +12,7 @@ class SectorDialogue(Tk):
 
         self.callback = callback
         self.sectormanager = sector_manager
-        self.mainframe = Frame(self, padding=10)
+        self.mainframe = Frame(self, padx=10, pady=10)
 
         self.entry_frame = Frame(self.mainframe)
         self.button_frame = Frame(self.mainframe)
@@ -67,7 +66,7 @@ class SectorDialogue(Tk):
         self.mainframe.grid(column=0, row=2)
 
     def save_data(self):
-        output = sectormanager.SectorInfo(None)
+        output = SectorInfo(None)
         output.texture = self.texture_entry.get()
         output.floor = self.floor_entry.get()
         output.ceil = self.ceil_entry.get()
@@ -75,7 +74,7 @@ class SectorDialogue(Tk):
             output.z_floor = int(self.z_floor_entry.get())
             output.z_ceil = int(self.z_ceil_entry.get())
         except ValueError:
-            tkMessageBox.showwarning(
+            tkinter.messagebox.showwarning(
                 "Value Error!",
                 "Floor/Ceiling height is not an integer :("
             )

@@ -17,5 +17,5 @@ if os.path.isfile("../res.py"):
 with open("../res.py", "w") as f:
     for i in range(len(encodes)):
         name = files[i][:files[i].find(".")]
-        print "writing {}".format(name)
+        print("writing {}".format(name))
         f.write("{} = \"{}\"\n\n".format(name, encodes[i]))

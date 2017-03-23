@@ -1,6 +1,7 @@
 # Description: UI manager for the main sidebar
-from Tkinter import *
-import sectormanager
+from tkinter import Frame
+from tkinter.constants import *
+from ui.sectormanager import SectorManager
 
 
 class PropertiesPanel(Frame):
@@ -9,5 +10,5 @@ class PropertiesPanel(Frame):
 
         self.config(border=3, relief=RIDGE, width=150)
 
-        self.sectormanager = sectormanager.SectorManager(self)
+        self.sectormanager = SectorManager(self)
         self.sectormanager.grid(column=0, row=1, sticky=NSEW)

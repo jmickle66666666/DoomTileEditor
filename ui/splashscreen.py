@@ -1,4 +1,4 @@
-from Tkinter import *
+from tkinter import *
 import res
 from util import resutil
 

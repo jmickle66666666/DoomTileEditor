@@ -119,12 +119,12 @@ def tiles2linedata(tiles, void):
                     maplines.append(MapLine((i*TILESIZE)+TILESIZE, (j*TILESIZE) + TILESIZE, (i*TILESIZE),
                                             (j*TILESIZE) + TILESIZE, tiles[i][j+1], void))
 
-    print "merge lines"
+    print ("merge lines")
     # merge lines
 
     mergeone = True  # we break out of the loop every time we create a line, this is necessary to make sure it works
     timeout = 1000  # just in case. might get rid of this since it works now
-    print "map lines at start: {}".format(len(maplines))  # lets see how many lines we saved! spoilers: a lot
+    print ("map lines at start: {}".format(len(maplines)))  # lets see how many lines we saved! spoilers: a lot
     while mergeone is True and timeout > 0:
         timeout -= 1 
         mergeone = False
@@ -149,7 +149,7 @@ def tiles2linedata(tiles, void):
                                         maplines[:] = [x for x in maplines if x.remain is not False]
                                         mergeone = True
                                         break  # and go from the start!
-    print "map lines at end: {}".format(len(maplines))
+    print ("map lines at end: {}".format(len(maplines)))
     return maplines
 
 
@@ -209,14 +209,14 @@ def linedata2doom(lines, mapsectors):
 
 # convert tiles to a doom map
 def tile2doom(tiles, mapsectors, void):
-    print "converting tiles to map"
+    print ("converting tiles to map")
     _wad = omg.WAD()
     omap = omg.mapedit.MapEditor()
 
     player_placed = 0
 
     for i in range(len(tiles)):
-        print "tile {}/{}".format(i+1, len(tiles))
+        print ("tile {}/{}".format(i+1, len(tiles)))
         for j in range(len(tiles[i])):
             if tiles[i][j] != void:
                 ms = mapsectors[tiles[i][j] - 1]
@@ -255,7 +255,7 @@ def load_json_sectors(json_sectors):
 # convert a json data file all the way into a doom map!
 def json2doom(data):
     if data["version"] != "0.1": 
-        print "Sorry, invalid version in json: {}".format(data["version"])
+        print ("Sorry, invalid version in json: {}".format(data["version"]))
         return None
 
     global TILESIZE

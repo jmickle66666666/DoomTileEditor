@@ -1,6 +1,9 @@
 # a TextureCollection contains a dictionary of PIL Images, named depending on texture source
-import os, omg, omg.txdef
+import os
+import omg
+import omg.txdef
 from PIL import Image
+
 
 class TextureCollection:
     def __init__(self):
@@ -35,8 +38,8 @@ class TextureCollection:
                 pixdata = pimg.load()
 
                 width, height = pimg.size
-                for y in xrange(height):
-                    for x in xrange(width):
+                for y in range(height):
+                    for x in range(width):
                         if pixdata[x, y] == (255, 0, 255, 255):
                             pixdata[x, y] = (255, 255, 255, 0)
 

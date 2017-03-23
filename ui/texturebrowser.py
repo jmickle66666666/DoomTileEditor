@@ -1,5 +1,6 @@
 # The UI and functionality for browsing and selecting textures from texture collections
-from Tkinter import *
+from tkinter import Tk, Frame, Canvas, Scrollbar, Label
+from tkinter.constants import *
 from util import texturecollection
 from PIL import Image, ImageTk
 
@@ -121,13 +122,13 @@ class TextureGrid(Frame):
         texture_index = int((c_y * self.row_item_count) + c_x)
 
         # here: iterate the texture items and highlight correct one
-        for i in range(len(self.texture_items)):
+        for i, t in enumerate(self.texture_items):
             if i == texture_index:
-                self.texture_items[i].highlight()
+                t.highlight()
             else:
-                self.texture_items[i].unhighlight()
+                t.unhighlight()
 
-        print self.texture_items[texture_index].name
+        print(self.texture_items[texture_index].name)
 
     def on_mouse_wheel(self, event):
         self.canvas.yview("scroll", -event.delta, "units")
