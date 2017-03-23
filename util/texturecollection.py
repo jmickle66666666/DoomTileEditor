@@ -6,12 +6,13 @@ from PIL import Image
 
 
 class TextureCollection:
-    def __init__(self):
+    def __init__(self, name):
         self.textures = {}
+        self.name = name
 
     @staticmethod
     def load_folder(path):
-        tc = TextureCollection()
+        tc = TextureCollection(path)
         files = os.listdir(path)
         for fp in files:
             try:
@@ -24,7 +25,7 @@ class TextureCollection:
 
     @staticmethod
     def load_doom_wad(path):
-        tc = TextureCollection()
+        tc = TextureCollection(path[path.rfind('/')+1:])
         wad = omg.WAD(path)
         tex = omg.txdef.Textures(wad.txdefs)
 

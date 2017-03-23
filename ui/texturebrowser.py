@@ -1,5 +1,6 @@
 # The UI and functionality for browsing and selecting textures from texture collections
-from tkinter import Tk, Frame, Canvas, Scrollbar, Label
+from tkinter import Tk, Frame, Canvas, Scrollbar
+from tkinter.ttk import Treeview
 from tkinter.constants import *
 from util import texturecollection
 from PIL import Image, ImageTk
@@ -55,6 +56,12 @@ class TextureItem:
     def unhighlight(self):
         self.canvas.itemconfig(self.highlight_id, state=HIDDEN)
 
+    def delete(self):
+        self.canvas.delete(self.image_id)
+        self.canvas.delete(self.text_id)
+        self.canvas.delete(self.rect_id)
+        self.canvas.delete(self.highlight_id)
+
 
 # The panel to list all the textures in a single collection
 class TextureGrid(Frame):
@@ -98,6 +105,7 @@ class TextureGrid(Frame):
         self.canvas.config(scrollregion=(0, 0, 0, 20 + (itemcount * self.item_space)))
 
     def load_texture_collection(self, tc):
+        self.clear_items()
         self.texture_items = []
         for t in tc.textures:
             ratio = float(PREVIEW_SIZE) / max(tc.textures[t].width, tc.textures[t].height)
@@ -108,6 +116,11 @@ class TextureGrid(Frame):
             photoimage = ImageTk.PhotoImage(thumbnail)
             self.add_item(t, photoimage)
         self.reposition_items()
+
+    def clear_items(self):
+        for t in self.texture_items:
+            t.delete()
+            del t
 
     def calculate_row_size(self):
         self.row_item_count = max((self.canvas.winfo_width()+20) // self.item_space, 1)
@@ -138,10 +151,25 @@ class TextureGrid(Frame):
 class TextureCollectionList(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
+        self.parent = parent
         self.config(width=200)
 
-        self.junk_text = Label(self, text="TextureCollection 1\nTextureCollection 2\netc")
-        self.junk_text.pack()
+        self.collections = []
+
+        self.collection_list = Treeview(self, selectmode="browse")
+        self.collection_list.heading("#0", text="Texture Collections")
+        self.collection_list.bind("<<TreeviewSelect>>", self.on_select)
+        self.collection_list.pack(fill=Y, expand=1)
+
+    def add_collection(self, texture_collection):
+        self.collections.append(texture_collection)
+        new_id = self.collection_list.insert('', "end")
+        self.collection_list.item(new_id, text=texture_collection.name)
+
+    def on_select(self, event):
+        selection_id = self.collection_list.selection()[0]
+        index = self.collection_list.index(selection_id)
+        self.parent.texture_grid.load_texture_collection(self.collections[index])
 
 
 # The master window for the texture browser
@@ -163,8 +191,18 @@ class TextureBrowser(Tk):
 
 
 if __name__ == "__main__":
+    app = TextureBrowser(None)
     test_textures_path = "/Users/jerry.micklethwaite/Documents/doom/DOOM2.WAD"
     tc = texturecollection.TextureCollection.load_doom_wad(test_textures_path)
-    app = TextureBrowser(None)
-    app.texture_grid.load_texture_collection(tc)
+    app.texture_collection_list.add_collection(tc)
+    test_textures_path = "/Users/jerry.micklethwaite/Documents/doom/freedoom-0.10.1/freedoom1.wad"
+    tc = texturecollection.TextureCollection.load_doom_wad(test_textures_path)
+    app.texture_collection_list.add_collection(tc)
+    # test_textures_path = "/Users/jerry.micklethwaite/Downloads/btsx_e1/btsx_e1a.wad"
+    # tc = texturecollection.TextureCollection.load_doom_wad(test_textures_path)
+    # app.texture_collection_list.add_collection(tc)
+    # test_textures_path = "/Users/jerry.micklethwaite/Downloads/btsx_e1/btsx_e1b.wad"
+    # tc = texturecollection.TextureCollection.load_doom_wad(test_textures_path)
+    # app.texture_collection_list.add_collection(tc)
+    # app.texture_grid.load_texture_collection(tc)
     app.mainloop()
