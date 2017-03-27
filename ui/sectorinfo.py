@@ -1,6 +1,6 @@
 import random
 from tkinter import *
-from ui.sectordialogue import SectorDialogue
+import ui.sectordialogue
 
 
 class SectorInfo:
@@ -61,4 +61,4 @@ class SectorInfo:
         self.sectormanager.update_frame()
 
     def edit(self):
-        SectorDialogue(None, self.sectormanager, self, self.replace)
+        ui.sectordialogue.SectorDialogue(None, self.sectormanager, self, self.replace)
